@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,14 +68,32 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self where T: PartialOrd + Copy {
+        let mut merged_list = LinkedList::<T>::new();
+        let mut curr_a = list_a.start;
+        let mut curr_b = list_b.start;
+        while curr_a.is_some() && curr_b.is_some(){
+            let val_a = unsafe{&curr_a.unwrap().as_ref().val};
+            let val_b = unsafe{&curr_b.unwrap().as_ref().val};
+            if val_a < val_b{
+                merged_list.add(*val_a);
+                curr_a = unsafe{curr_a.unwrap().as_ref().next};
+            }else{
+                merged_list.add(*val_b);
+                curr_b = unsafe{curr_b.unwrap().as_ref().next};
+            }
         }
+        while curr_a.is_some(){
+            let val_a = unsafe{&curr_a.unwrap().as_ref().val};
+            merged_list.add(*val_a);
+            curr_a = unsafe{curr_a.unwrap().as_ref().next};
+        }
+        while curr_b.is_some(){
+            let val_b = unsafe{&curr_b.unwrap().as_ref().val};
+            merged_list.add(*val_b);
+            curr_b = unsafe{curr_b.unwrap().as_ref().next};
+        }
+        merged_list
 	}
 }
 

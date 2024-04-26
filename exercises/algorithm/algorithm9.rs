@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,11 +36,36 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+        self.items.push(value);
+        self.sift_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
         idx / 2
+    }
+
+    fn sift_up(&mut self, idx: usize) {
+        let mut child_idx = idx;
+        let mut parent_idx = self.parent_idx(child_idx);
+        while child_idx > 1 && (self.comparator)(&self.items[child_idx], &self.items[parent_idx]) {
+            self.items.swap(child_idx, parent_idx);
+            child_idx = parent_idx;
+            parent_idx = self.parent_idx(child_idx);
+        }
+    }
+
+    fn sift_down(&mut self, idx: usize) {
+        let mut parent_idx = idx;
+        while self.children_present(parent_idx) {
+            let smallest_child_idx = self.smallest_child_idx(parent_idx);
+            if (self.comparator)(&self.items[smallest_child_idx], &self.items[parent_idx]) {
+                self.items.swap(smallest_child_idx, parent_idx);
+                parent_idx = smallest_child_idx;
+            } else {
+                break;
+            }
+        }
     }
 
     fn children_present(&self, idx: usize) -> bool {
@@ -57,8 +81,14 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_child_idx = self.left_child_idx(idx);
+        let right_child_idx = self.right_child_idx(idx);
+
+        if right_child_idx <= self.count && (self.comparator)(&self.items[right_child_idx], &self.items[left_child_idx]) {
+            right_child_idx
+        } else {
+            left_child_idx
+        }
     }
 }
 
@@ -84,8 +114,15 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        let root = self.items.swap_remove(1);
+        self.count -= 1;
+        self.sift_down(1);
+
+        Some(root)
     }
 }
 
